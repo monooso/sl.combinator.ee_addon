@@ -1,36 +1,35 @@
 <?php
 
-/**
- * @package SL Combinator
- * @version 2.1.0
- * @author Stephen Lewis (http://experienceinternet.co.uk/)
- * @copyright Copyright (c) 2008-2009, Stephen Lewis
- * @license http://creativecommons.org/licenses/by-sa/3.0 Creative Commons Attribution-Share Alike 3.0 Unported
- * @link http://experienceinternet.co.uk/resources/details/sl-combinator/
-*/
-
-if ( ! defined('SL_CMB_version'))
+if ( ! defined('EXT'))
 {
-	define('SL_CMB_version', '2.1.0');
-	define('SL_CMB_docs_url', 'http://experienceinternet.co.uk/resources/details/sl-combinator/');
-	define('SL_CMB_addon_id', 'SL Combinator');
-	define('SL_CMB_extension_class', 'Sl_combinator_ext');	
+	exit('Invalid file request');
 }
 
+/**
+ * Combine and compress JavaScript and CSS files for faster downloading.
+ *
+ * @package   	SL Combinator
+ * @version   	2.1.1
+ * @author    	Stephen Lewis <addons@experienceinternet.co.uk>
+ * @copyright 	Copyright (c) 2008-2010, Stephen Lewis
+ * @link      	http://experienceinternet.co.uk/software/sl-combinator/
+ */
 
 /**
  * Plugin information used by EE.
+ *
  * @global array $plugin_info
  */
 $plugin_info = array(
-		'pi_name' 				=> 'SL Combinator',
-		'pi_version' 			=> SL_CMB_version,
-		'pi_author' 			=> 'Stephen Lewis',
-		'pi_author_url' 	=> 'http://experienceinternet.co.uk/',
-		'pi_description' 	=> 'Combines and compresses JavaScript or CSS files for faster downloading.',
-		'pi_usage'				=> Sl_combinator::usage()
+	'pi_name' 		=> 'SL Combinator',
+	'pi_version' 	=> '2.1.1',
+	'pi_author' 	=> 'Stephen Lewis',
+	'pi_author_url' => 'http://experienceinternet.co.uk/',
+	'pi_description' => 'Combines and compresses JavaScript or CSS files for faster downloading.',
+	'pi_usage'		=> Sl_combinator::usage()
 );
 
+require_once PATH_EXT .'ext.sl_combinator_ext' .EXT;
 
 class Sl_combinator {
 
@@ -38,8 +37,12 @@ class Sl_combinator {
 	* Data returned from the plugin.
 	* @var array
 	*/
-	var $return_data = '';	
+	var $return_data = '';
 	
+	
+	/* --------------------------------------------------------------
+	 * PUBLIC METHODS
+	 * ------------------------------------------------------------ */
 	
 	/**
 	 * PHP4 constructor.
@@ -56,11 +59,6 @@ class Sl_combinator {
 	 */
 	function __construct()
 	{
-		if  ( ! class_exists('Sl_combinator_ext'))
-		{
-			include(PATH_EXT . 'ext.sl_combinator_ext.php');
-		}
-		
 		// Retrieve the extension settings.
 		$slc = new Sl_combinator_ext;
 		$this->settings = $slc->get_settings();

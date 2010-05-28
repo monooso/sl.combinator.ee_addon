@@ -1,72 +1,85 @@
 <?php
 
-/**
- * @package SL Combinator
- * @version 2.1.0
- * @author Stephen Lewis (http://experienceinternet.co.uk/)
- * @copyright Copyright (c) 2008-2009, Stephen Lewis
- * @license http://creativecommons.org/licenses/by-sa/3.0 Creative Commons Attribution-Share Alike 3.0 Unported
- * @link http://experienceinternet.co.uk/resources/details/sl-combinator/
-*/ 
-
 if ( ! defined('EXT'))
 {
 	exit('Invalid file request');
-} // if
-
-if ( ! defined('SL_CMB_version'))
-{
-	define('SL_CMB_version', '2.1.0');
-	define('SL_CMB_docs_url', 'http://experienceinternet.co.uk/resources/details/sl-combinator/');
-	define('SL_CMB_addon_id', 'SL Combinator');
-	define('SL_CMB_extension_class', 'Sl_combinator_ext');
 }
 
+/**
+ * Combine and compress JavaScript and CSS files for faster downloading.
+ *
+ * @package   	SL Combinator
+ * @version   	2.1.1
+ * @author    	Stephen Lewis <addons@experienceinternet.co.uk>
+ * @copyright 	Copyright (c) 2008-2010, Stephen Lewis
+ * @link      	http://experienceinternet.co.uk/software/sl-combinator/
+ */
 
 class Sl_combinator_ext {
 	
 	/**
-	 * Extension settings.
-	 * @var array
+	 * Description.
+	 *
+	 * @access	public
+	 * @var		string
 	 */
-   var $settings        = array();
-
+	var $description = 'Settings for the SL Combinator add-on.';
+	
+	/**
+	 * Documentation URL.
+	 *
+	 * @access	public
+	 * @var		string
+	 */
+	var $docs_url = 'http://experienceinternet.co.uk/software/sl-combinator/';
+	
+	
 	/**
 	 * Extension name.
-	 * @var string
+	 *
+	 * @access	public
+	 * @var		string
 	 */
-   var $name            = SL_CMB_addon_id;
-
+	var $name = 'SL Combinator';
+	
 	/**
-	 * Extension version.
-	 * @var string
+	 * Settings
+	 *
+	 * @access	public
+	 * @var		string
 	 */
-   var $version         = SL_CMB_version;
-
+	var $settings = array();
+	
 	/**
-	 * Extension description.
-	 * @var string
+	 * Does the extension have a settings form?
+	 *
+	 * @access	public
+	 * @var		string
 	 */
-   var $description     = 'Settings for the SL Combinator plugin.';
-
+	var $settings_exist = 'y';
+	
 	/**
-	 * If $settings_exist = 'y', the settings page will be displayed in EE admin.
-	 * @var string
+	 * Version.
+	 *
+	 * @access	public
+	 * @var		string
 	 */
-   var $settings_exist  = 'y';
-
-	/**
-	 * Link to extension documentation.
-	 * @var string
-	 */
-   var $docs_url        = SL_CMB_docs_url;
-
+	var $version = '2.1.1';
+	
+	
+	/* --------------------------------------------------------------
+	 * PUBLIC METHODS
+	 * ------------------------------------------------------------ */
 
 	/**
 	 * PHP4 constructor.
-	 * @see __construct
+	 *
+	 * @see		__construct
+	 * @access	public
+	 * @param	mixed	$settings	Previously-saved extension settings.
+	 * @return	void
 	 */
-	function Sl_combinator_ext($settings='')
+	function Sl_combinator_ext($settings = '')
 	{
 		$this->__construct($settings);
 	}
@@ -74,18 +87,23 @@ class Sl_combinator_ext {
 	
 	/**
 	 * PHP5 constructor
-	 * @param array|string $settings Extension settings; associative array or empty string.
+	 *
+	 * @access	public
+	 * @param 	mixed 	$settings 	Previously-saved extension settings.
+	 * @return 	void
 	 */
 	function __construct($settings='')
 	{
 		global $PREFS, $DB, $REGX;
 		
-		// Retrieve the settings from the database.
 		$settings = FALSE;
 		
-		// Retrieve the settings from the database.
-		$query = $DB->query("SELECT settings FROM exp_extensions WHERE enabled = 'y' AND class = '" . get_class($this) . "' LIMIT 1");
-		if ($query->num_rows == 1 && $query->row['settings'] != '')
+		$query = $DB->query("SELECT settings
+			FROM exp_extensions
+			WHERE enabled = 'y'
+			AND class = '" . get_class($this) . "' LIMIT 1");
+		
+		if ($query->num_rows == 1)
 		{
 			$settings = $REGX->array_stripslashes(unserialize($query->row['settings']));
 		}
@@ -96,8 +114,10 @@ class Sl_combinator_ext {
 	
 	/**
 	 * Registers a new addon.
-	 * @param			array 		$addons			The existing addons.
-	 * @return 		array 		The new addons list.
+	 *
+	 * @access	public
+	 * @param	array 		$addons			The existing addons.
+	 * @return 	array
 	 */
 	function lg_addon_update_register_addon($addons)
 	{
@@ -112,7 +132,7 @@ class Sl_combinator_ext {
 		// Register a new addon.
 		if ($this->settings['update_check'] == 'y')
 		{
-			$addons[SL_DEVINFO_EXT_NAME] = $this->version;
+			$addons[$this->name] = $this->version;
 		}
 		
 		return $addons;
@@ -121,8 +141,10 @@ class Sl_combinator_ext {
 	
 	/**
 	 * Registers a new addon source.
-	 * @param			array 		$sources		The existing sources.
-	 * @return		array 		The new source list.
+	 *
+	 * @access	public
+	 * @param	array 		$sources		The existing sources.
+	 * @return	array
 	 */
 	function lg_addon_update_register_source($sources)
 	{
@@ -137,7 +159,7 @@ class Sl_combinator_ext {
 		// Register a new source.
 		if ($this->settings['update_check'] == 'y')
 		{
-			$sources[] = 'http://www.experienceinternet.co.uk/addon-versions.xml';
+			$sources[] = 'http://experienceinternet.co.uk/addon-versions.xml';
 		}
 		
 		return $sources;
@@ -146,6 +168,9 @@ class Sl_combinator_ext {
 	
 	/**
 	 * Activate the extension.
+	 *
+	 * @access	public
+	 * @return 	void
 	 */
 	function activate_extension()
 	{
@@ -154,11 +179,13 @@ class Sl_combinator_ext {
 		$hooks = array(
 			'lg_addon_update_register_source'	=> 'lg_addon_update_register_source',
 			'lg_addon_update_register_addon'	=> 'lg_addon_update_register_addon'
-			);
+		);
 			
 		foreach ($hooks AS $hook => $method)
 		{
-			$sql[] = $DB->insert_string('exp_extensions', array(
+			$sql[] = $DB->insert_string(
+				'exp_extensions',
+				array(
 					'extension_id' => '',
 					'class'        => get_class($this),
 					'method'       => $method,
@@ -167,7 +194,8 @@ class Sl_combinator_ext {
 					'priority'     => 10,
 					'version'      => $this->version,
 					'enabled'      => 'y'
-					));
+				)
+			);
 		}
 		
 		// Run all the SQL queries.
@@ -180,61 +208,72 @@ class Sl_combinator_ext {
 
 	/**
 	 * Updates the extension.
-	 * @param string $current Contains the current version if the extension is already installed, otherwise empty.
-	 * @return bool FALSE if the extension is not installed, or is the current version.
+	 *
+	 * @access	public
+	 * @param 	string 		$current 	The current extension version.
+	 * @return 	bool
 	 */
 	function update_extension($current='')
 	{
 		global $DB;
 
 		if ($current == '' OR $current == $this->version)
+		{
 			return FALSE;
+		}
 
 		if ($current < $this->version)
 		{
 			$DB->query("UPDATE exp_extensions
-										SET version = '" . $DB->escape_str($this->version) . "' 
-										WHERE class = '" . get_class($this) . "'");
+				SET version = '" .$DB->escape_str($this->version) ."' 
+				WHERE class = '" .get_class($this) ."'");
 		}
 	}
 
 
 	/**
 	 * Disables the extension, and deletes settings from the database.
+	 *
+	 * @access	public
+	 * @return 	void
 	 */
 	function disable_extension()
 	{
-		global $DB;	
-		$DB->query("DELETE FROM exp_extensions WHERE class = '" . get_class($this) . "'");
+		global $DB;
+		
+		$DB->query("DELETE FROM exp_extensions
+			WHERE class = '" .get_class($this) ."'");
 	}
 	
 	
 	/**
-	 * Get the extension settings from the extensions database table.
-	 * @return array if settings are found, otherwise FALSE.
+	 * Get the extension settings from the extensions database table. Used by
+	 * the SL Combinator plugin.
+	 *
+	 * @access	public
+	 * @return 	array|bool
 	 */
 	function get_settings()
 	{
 		global $DB, $SESS, $REGX;
 		
 		$ret = FALSE;
-		$cache_id = strtolower(SL_CMB_extension_class);
+		$cache_id = strtolower(get_class($this));
 		
 		if (isset($SESS->cache[$cache_id]['settings']) === FALSE)
 		{
 			$query = $DB->query("SELECT settings
-														FROM exp_extensions
-														WHERE enabled = 'y'
-														AND class = '" . SL_CMB_extension_class . "' LIMIT 1");
+				FROM exp_extensions
+				WHERE enabled = 'y'
+				AND class = '" .get_class($this) ."' LIMIT 1");
 			
-			// If we've got some settings, save them to the cache.											
-			if ($query->num_rows == 1 && $query->row['settings'] != '')
+			// If we've got some settings, save them to the cache.
+			if ($query->num_rows == 1)
 			{
 				$SESS->cache[$cache_id]['settings'] = $REGX->array_stripslashes(unserialize($query->row['settings']));
 			}
 		}
 		
-		// If the cache has been set, make a note of the settings in the return variable.
 		if (empty($SESS->cache[$cache_id]['settings']) !== TRUE)
 		{
 			$ret = $SESS->cache[$cache_id]['settings'];
@@ -246,7 +285,9 @@ class Sl_combinator_ext {
 	
 	/**
 	 * Enables the user to specify the Extension settings.
-	 * @param		object		$current		No idea what this variable does yet...
+	 *
+	 * @access	public
+ 	 * @return 	void
 	 */
 	function settings_form($current)
 	{	
@@ -268,21 +309,21 @@ class Sl_combinator_ext {
 		// Open the form.		
 		$DSP->body .= $DSP->form_open(
 			array(
-				'action'	=> 'C=admin' . AMP . 'M=utilities' . AMP . 'P=save_extension_settings',
-				'id'			=> 'sl_combinator',
-				'name'		=> 'sl_combinator'
-				),
+				'action' => 'C=admin' . AMP . 'M=utilities' . AMP . 'P=save_extension_settings',
+				'id'	=> 'sl_combinator',
+				'name'	=> 'sl_combinator'
+			),
 			array('name' => strtolower(get_class($this)))		/* Must be lowercase. */
-			);
+		);
 			
 		// Cache path settings.
 		$DSP->body .= $DSP->table_open(
 			array(
-				'class' 	=> 'tableBorder',
-				'border' 	=> '0',
-				'style' 	=> 'width : 100%; margin-top : 1em;',
-				)
-			);
+				'class' => 'tableBorder',
+				'border' => '0',
+				'style' => 'width : 100%; margin-top : 1em;',
+			)
+		);
 			
 		$DSP->body .= $DSP->tr();
 		$DSP->body .= $DSP->td('tableHeading', '', '2');
@@ -313,11 +354,11 @@ class Sl_combinator_ext {
 		// Automatic update?
 		$DSP->body .= $DSP->table_open(
 			array(
-				'class' 	=> 'tableBorder',
-				'border' 	=> '0',
-				'style' 	=> 'width : 100%; margin-top : 1em;',
-				)
-			);
+				'class' => 'tableBorder',
+				'border' => '0',
+				'style' => 'width : 100%; margin-top : 1em;',
+			)
+		);
 			
 		$DSP->body .= $DSP->tr();
 		$DSP->body .= $DSP->td('tableHeading', '', '2');
@@ -351,20 +392,18 @@ class Sl_combinator_ext {
 		// Form submission.
 		$DSP->body .= $DSP->qdiv(
 			'itemWrapperTop',
-			$DSP->input_submit(
-				$LANG->line('save_settings'),
-				'save_settings',
-				'id="save_settings"'
-				)
-			);
+			$DSP->input_submit($LANG->line('save_settings'), 'save_settings', 'id="save_settings"')
+		);
 		
-		// Close the form.
 		$DSP->body .= $DSP->form_c();
 	}
 	
 	
 	/**
 	 * Saves the Extension settings.
+	 *
+	 * @access	public
+	 * @return 	void
 	 */
 	function save_settings()
 	{
@@ -372,15 +411,18 @@ class Sl_combinator_ext {
 		
 		// Initialise the settings array.
 		$this->settings = array(
-			'min_url'				=> isset($_POST['min_url']) ? $_POST['min_url'] : '',
+			'min_url'		=> isset($_POST['min_url']) ? $_POST['min_url'] : '',
 			'update_check'	=> isset($_POST['update_check']) ? $_POST['update_check'] : ''
-			);
+		);
 		
 		// Serialise the settings, and save them to the database.
-		$sql = "UPDATE exp_extensions SET settings = '" . addslashes(serialize($this->settings)) . "' WHERE class = '" . get_class($this) . "'";
+		$sql = "UPDATE exp_extensions SET settings = '"
+			.addslashes(serialize($this->settings)) ."' WHERE class = '"
+			.get_class($this) ."'";
+		
 		$DB->query($sql);
 	}
-				
 }
 
-?>
+/* End of file		: ext.sl_combinator_ext.php */
+/* File location	: /system/extensions/ext.sl_combinator_ext.php */
